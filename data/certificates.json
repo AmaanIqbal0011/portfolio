@@ -1,0 +1,32 @@
+{
+  "certificates": [
+    {
+      "name": "OpenAI Agent SDK",
+      "score": "97%",
+      "issuer": "GIAIC",
+      "date": "2023",
+      "link": ""
+    },
+    {
+      "name": "Prompt Engineering",
+      "score": "65%",
+      "issuer": "PIAIC",
+      "date": "2023",
+      "link": ""
+    },
+    {
+      "name": "n8n Automation — Level 1",
+      "score": "100%",
+      "issuer": "n8n",
+      "date": "2024",
+      "link": ""
+    },
+    {
+      "name": "n8n Automation — Practical",
+      "score": "89%",
+      "issuer": "n8n",
+      "date": "2024",
+      "link": ""
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#1a1a1a"/>
+  <circle cx="100" cy="80" r="35" fill="#333"/>
+  <ellipse cx="100" cy="160" rx="55" ry="40" fill="#333"/>
+  <text x="100" y="195" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="12">AI</text>
+</svg>
