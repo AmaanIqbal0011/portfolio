@@ -12,6 +12,7 @@ import TechMarquee from "@/components/tech-marquee";
 import GitHubStats from "@/components/github/github-stats";
 import Contact from "@/components/contact";
 import Footer from "@/components/footer";
+import ChatWidget from "@/components/chat-widget";
 
 export default function Home() {
   return (
@@ -32,6 +33,7 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <ChatWidget />
     </div>
   );
 }

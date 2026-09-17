@@ -12,13 +12,15 @@
     "@neon/config": "^1.7.0",
     "@neon/env": "^1.4.1",
     "@neondatabase/serverless": "^1.1.0",
+    "@tailwindcss/typography": "^0.5.20",
     "drizzle-orm": "^0.45.2",
     "framer-motion": "^13.3.0",
     "lucide-react": "^1.46.0",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-icons": "^5.7.0"
+    "react-icons": "^5.7.0",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
