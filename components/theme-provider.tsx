@@ -7,20 +7,20 @@ type Theme = 'light' | 'dark';
 const ThemeContext = createContext<{
   theme: Theme;
   toggleTheme: () => void;
-}>({ theme: 'dark', toggleTheme: () => {} });
+}>({ theme: 'light', toggleTheme: () => {} });
 
 export function useTheme() {
   return useContext(ThemeContext);
 }
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem('portfolio-theme') as Theme | null;
-    const initial = stored || 'dark';
+    const initial = stored || 'light';
     setTheme(initial);
     document.documentElement.classList.toggle('dark', initial === 'dark');
   }, []);
@@ -32,7 +32,7 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle('dark', next === 'dark');
   };
 
-  if (!mounted) return <div className="dark">{children}</div>;
+  if (!mounted) return <div className="light">{children}</div>;
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

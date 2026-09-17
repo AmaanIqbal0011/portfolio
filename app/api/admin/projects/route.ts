@@ -1,43 +1,72 @@
 import { NextResponse } from 'next/server';
-import { readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
-
-const SETTINGS_PATH = join(process.cwd(), 'data', 'project-settings.json');
-
-export interface ProjectSettings {
-  hidden: string[];
-  customImages: Record<string, string>;
-}
-
-async function readSettings(): Promise<ProjectSettings> {
-  try {
-    const data = await readFile(SETTINGS_PATH, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return { hidden: [], customImages: {} };
-  }
-}
-
-async function writeSettings(settings: ProjectSettings): Promise<void> {
-  await writeFile(SETTINGS_PATH, JSON.stringify(settings, null, 2));
-}
+import { db } from '@/lib/db';
+import { projectSettings } from '@/lib/db/schema';
+import { verifyOwnerSession } from '@/lib/auth/owner';
 
 export async function GET() {
-  const settings = await readSettings();
-  return NextResponse.json(settings);
+  try {
+    const rows = await db
+      .select()
+      .from(projectSettings)
+      .orderBy(projectSettings.displayOrder);
+
+    const hidden = rows.filter(r => r.isHidden).map(r => r.repoName);
+    const customImages: Record<string, string> = {};
+    for (const row of rows) {
+      if (row.customImageUrl) {
+        customImages[row.repoName] = row.customImageUrl;
+      }
+    }
+
+    return NextResponse.json({ hidden, customImages, projects: rows });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to load settings', details: message }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const { hidden, customImages } = body;
+  try {
+    const isOwner = await verifyOwnerSession();
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-  if (!Array.isArray(hidden)) {
-    return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+    const body = await request.json();
+    const { hidden, customImages } = body;
+
+    if (!Array.isArray(hidden)) {
+      return NextResponse.json({ error: 'Invalid data: hidden must be an array' }, { status: 400 });
+    }
+
+    const images: Record<string, string> = customImages || {};
+
+    const allRepoNames = new Set([...hidden, ...Object.keys(images)]);
+
+    for (const repoName of allRepoNames) {
+      const isHidden = hidden.includes(repoName);
+      const customImageUrl = images[repoName] || null;
+
+      await db
+        .insert(projectSettings)
+        .values({
+          repoName,
+          isHidden,
+          customImageUrl,
+        })
+        .onConflictDoUpdate({
+          target: projectSettings.repoName,
+          set: {
+            isHidden,
+            customImageUrl,
+            updatedAt: new Date(),
+          },
+        });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to save settings', details: message }, { status: 500 });
   }
-
-  await writeSettings({
-    hidden,
-    customImages: customImages || {},
-  });
-  return NextResponse.json({ success: true });
 }

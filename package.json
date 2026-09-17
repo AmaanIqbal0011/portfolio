@@ -9,6 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@neon/config": "^1.7.0",
+    "@neon/env": "^1.4.1",
+    "@neondatabase/serverless": "^1.1.0",
+    "drizzle-orm": "^0.45.2",
     "framer-motion": "^13.3.0",
     "lucide-react": "^1.46.0",
     "next": "16.3.5",
@@ -21,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",

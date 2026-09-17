@@ -151,10 +151,13 @@ export default function AdminDashboard({ onDisconnect }: Props) {
         setHasChanges(false);
         setTimeout(() => setSaveMessage(''), 3000);
       } else {
-        setSaveMessage('Save failed.');
+        const body = await res.json().catch(() => null);
+        const detail = body?.details || body?.error || `HTTP ${res.status}`;
+        setSaveMessage(`Save failed: ${detail}`);
       }
-    } catch {
-      setSaveMessage('Save failed.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Network error';
+      setSaveMessage(`Save failed: ${msg}`);
     }
     setSaving(false);
   };
@@ -191,10 +194,13 @@ export default function AdminDashboard({ onDisconnect }: Props) {
         setHasCertChanges(false);
         setTimeout(() => setCertMessage(''), 3000);
       } else {
-        setCertMessage('Save failed.');
+        const body = await res.json().catch(() => null);
+        const detail = body?.details || body?.error || `HTTP ${res.status}`;
+        setCertMessage(`Save failed: ${detail}`);
       }
-    } catch {
-      setCertMessage('Save failed.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Network error';
+      setCertMessage(`Save failed: ${msg}`);
     }
     setCertSaving(false);
   };
