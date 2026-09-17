@@ -3,8 +3,7 @@
 import { motion } from 'framer-motion';
 import { Mail, ArrowRight, ExternalLink } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
-import { FaLinkedinIn } from 'react-icons/fa';
-import { FaGoogle } from 'react-icons/fa';
+import { FaLinkedinIn, FaGoogle, FaWhatsapp } from 'react-icons/fa';
 import ScrollReveal from './scroll-reveal';
 
 export default function Contact() {
@@ -64,6 +63,16 @@ export default function Contact() {
               Connect on LinkedIn
               <ExternalLink className="w-3.5 h-3.5 opacity-60" />
             </a>
+            <a
+              href="https://wa.me/923292030521"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#25d366] text-white text-sm font-semibold hover:bg-[#1da851] transition-all shadow-lg shadow-[#25d366]/20"
+            >
+              <FaWhatsapp className="w-4 h-4" />
+              WhatsApp
+              <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+            </a>
           </div>
         </ScrollReveal>
 
@@ -93,6 +102,15 @@ export default function Contact() {
               className="flex items-center justify-center w-11 h-11 rounded-xl border border-[#0a66c2]/30 text-[#0a66c2] hover:bg-[#0a66c2] hover:text-white hover:border-[#0a66c2] transition-all duration-300"
             >
               <FaLinkedinIn className="w-[18px] h-[18px]" />
+            </a>
+            <a
+              href="https://wa.me/923292030521"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className="flex items-center justify-center w-11 h-11 rounded-xl border border-[#25d366]/30 text-[#25d366] hover:bg-[#25d366] hover:text-white hover:border-[#25d366] transition-all duration-300"
+            >
+              <FaWhatsapp className="w-[18px] h-[18px]" />
             </a>
           </div>
         </ScrollReveal>
