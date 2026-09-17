@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ExternalLink, Play, Sparkles, ArrowUpRight } from 'lucide-react';
+import { ExternalLink, Play, ArrowUpRight } from 'lucide-react';
 import { SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/si';
 import ScrollReveal from './scroll-reveal';
 
@@ -62,6 +62,12 @@ export default function FeaturedProject() {
           <p className="text-muted-foreground text-sm mb-10">
             AI SaaS &bull; AI Agents &bull; Content Automation
           </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+              In Development — Beta &amp; App Review in Progress (Meta, TikTok, LinkedIn)
+            </span>
+          </div>
         </ScrollReveal>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -72,42 +78,36 @@ export default function FeaturedProject() {
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
               className="group relative rounded-2xl border border-border bg-card overflow-hidden"
             >
-              {/* Gradient placeholder visual */}
-              <div className="aspect-[16/10] relative bg-gradient-to-br from-brand/10 via-purple-500/5 to-blue-500/10 flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 grid-bg grid-fade opacity-25" />
-                {/* Animated gradient orb */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-brand/10 rounded-full blur-[80px] group-hover:bg-brand/15 transition-all duration-700" />
-                <div className="relative z-10 text-center p-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand/10 border border-brand/20 mb-4 group-hover:scale-105 transition-transform duration-500">
-                    <Sparkles className="w-7 h-7 text-brand" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">ContentPilot.media</h3>
-                  <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                    Turn one piece of content into platform-ready content across multiple networks.
-                  </p>
-                </div>
+              {/* Product screenshot */}
+              <div className="aspect-[16/10] relative overflow-hidden">
+                <img
+                  src="/contentpilot.png"
+                  alt="ContentPilot — AI content repurposing platform"
+                  className="w-full h-full object-cover"
+                />
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8">
                   <div className="flex gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-foreground text-background text-xs font-semibold">
+                    <a href="https://contentpilot.media/" target="_blank" rel="noopener noreferrer"
+                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-foreground text-background text-xs font-semibold">
                       <Play className="w-3 h-3" />
                       View Project
-                    </span>
+                    </a>
                   </div>
                 </div>
               </div>
 
               {/* Actions */}
               <div className="flex items-center gap-2 p-4 border-t border-border">
-                <a href="#" target="_blank" rel="noopener noreferrer"
+                <a href="https://contentpilot.media/" target="_blank" rel="noopener noreferrer"
                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-opacity">
                   <Play className="w-3 h-3" />
                   Live Demo
                 </a>
-                <a href="#" target="_blank" rel="noopener noreferrer"
+                <a href="https://contentpilot.media/" target="_blank" rel="noopener noreferrer"
                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-accent transition-colors">
                   <ExternalLink className="w-3 h-3" />
-                  Case Study
+                  Join Waitlist
                 </a>
               </div>
             </motion.div>
