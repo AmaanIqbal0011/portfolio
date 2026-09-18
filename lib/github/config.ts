@@ -5,6 +5,10 @@ export const GITHUB_CONFIG = {
   scopes: ['read:user', 'repo'],
   cacheRevalidation: 3600, // 1 hour in seconds
   owner: process.env.GITHUB_OWNER || 'manho',
+  // Server-side token for fetching public repos without requiring admin OAuth.
+  // Set GITHUB_TOKEN env var to a classic PAT with public_repo scope, or use
+  // unauthenticated requests (subject to lower rate limits).
+  serverToken: process.env.GITHUB_TOKEN || '',
 } as const;
 
 export const FEATURED_REPOS = [

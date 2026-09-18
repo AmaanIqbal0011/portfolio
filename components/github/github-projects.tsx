@@ -14,90 +14,6 @@ const FILTERS: { label: string; value: 'all' | ProjectCategory }[] = [
   { label: 'Full Stack', value: 'fullstack' },
 ];
 
-// Fallback projects when GitHub is not connected
-const FALLBACK_PROJECTS: MappedProject[] = [
-  {
-    id: 'fallback-contentpilot',
-    name: 'contentpilot',
-    displayName: 'ContentPilot',
-    description: 'AI-powered content repurposing and distribution platform that helps creators turn one piece of content into platform-ready content across multiple social networks.',
-    category: 'ai',
-    categoryLabel: 'AI & Agents',
-    language: 'TypeScript',
-    languages: ['TypeScript', 'Next.js', 'OpenAI'],
-    topics: ['ai', 'content', 'saas'],
-    stars: 12,
-    forks: 3,
-    url: 'https://github.com/AmaanIqbal0011',
-    homepage: null,
-    updatedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    isFeatured: true,
-    isHidden: false,
-    gradient: 'from-brand/10 via-purple-500/5 to-blue-500/10',
-  },
-  {
-    id: 'fallback-ai-jobpilot',
-    name: 'ai-jobpilot',
-    displayName: 'AI JobPilot',
-    description: 'AI-powered job search and application assistant with resume intelligence, company analysis, job tracking, and a Kanban interface.',
-    category: 'ai',
-    categoryLabel: 'AI & Agents',
-    language: 'TypeScript',
-    languages: ['TypeScript', 'Next.js', 'AI'],
-    topics: ['ai', 'jobs', 'automation'],
-    stars: 8,
-    forks: 2,
-    url: 'https://github.com/AmaanIqbal0011',
-    homepage: null,
-    updatedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    isFeatured: false,
-    isHidden: false,
-    gradient: 'from-blue-500/10 to-cyan-500/5',
-  },
-  {
-    id: 'fallback-agent-toolkit',
-    name: 'agent-toolkit',
-    displayName: 'Agent Toolkit',
-    description: 'Reusable tools and utilities for AI agent development with OpenAI Agent SDK and custom tool-calling architectures.',
-    category: 'ai',
-    categoryLabel: 'AI & Agents',
-    language: 'Python',
-    languages: ['Python', 'OpenAI'],
-    topics: ['ai', 'agent', 'tools'],
-    stars: 15,
-    forks: 4,
-    url: 'https://github.com/AmaanIqbal0011',
-    homepage: null,
-    updatedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    isFeatured: false,
-    isHidden: false,
-    gradient: 'from-purple-500/10 to-pink-500/5',
-  },
-  {
-    id: 'fallback-ai-blog',
-    name: 'ai-blog-platform',
-    displayName: 'AI Tech Blog',
-    description: 'A modern technical blogging platform with an AI chatbot, writer dashboard, real-time data, authentication, and CRUD.',
-    category: 'fullstack',
-    categoryLabel: 'Full Stack',
-    language: 'TypeScript',
-    languages: ['TypeScript', 'Next.js', 'FastAPI'],
-    topics: ['blog', 'ai', 'saas'],
-    stars: 6,
-    forks: 1,
-    url: 'https://github.com/AmaanIqbal0011',
-    homepage: null,
-    updatedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    isFeatured: false,
-    isHidden: false,
-    gradient: 'from-emerald-500/10 to-teal-500/5',
-  },
-];
-
 export default function GitHubProjects() {
   const [projects, setProjects] = useState<MappedProject[]>([]);
   const [filter, setFilter] = useState<'all' | ProjectCategory>('all');
@@ -111,23 +27,35 @@ export default function GitHubProjects() {
       .then(([repoData, settings]) => {
         const hidden: string[] = settings.hidden || [];
         const images: Record<string, string> = settings.customImages || {};
-        if (repoData.data?.mappedProjects?.length > 0) {
-          setProjects(repoData.data.mappedProjects
+        const realProjects: MappedProject[] = repoData.data?.mappedProjects || [];
+
+        // Warn if any DB customImage key doesn't match a real repo name.
+        // This catches data mismatches early instead of silently failing.
+        const repoNames = new Set(realProjects.map((p: MappedProject) => p.name));
+        for (const key of Object.keys(images)) {
+          if (!repoNames.has(key)) {
+            console.warn(
+              `[GitHubProjects] customImage key "${key}" in DB does not match any fetched repo name. ` +
+              `It will be ignored. DB keys must use the real GitHub repo name (e.g. "my-repo", not "fallback-my-repo").`
+            );
+          }
+        }
+
+        // Always use real GitHub repo data. Custom images are merged from the DB
+        // using the real repo `name` as the key (must match project_settings.repo_name).
+        setProjects(
+          realProjects
             .filter((p: MappedProject) => !hidden.includes(p.name))
             .map((p: MappedProject) => ({
               ...p,
+              // DB customImage takes precedence; fall back to any value already on the mapped project
               customImage: images[p.name] || p.customImage,
             }))
-          );
-        } else {
-          setProjects(FALLBACK_PROJECTS.map(p => ({
-            ...p,
-            customImage: images[p.name] || p.customImage,
-          })));
-        }
+        );
       })
       .catch(() => {
-        setProjects(FALLBACK_PROJECTS);
+        // On error, show empty state — never silently render fake data
+        setProjects([]);
       })
       .finally(() => setLoading(false));
   }, []);

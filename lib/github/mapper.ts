@@ -87,6 +87,9 @@ export function mapRepository(repo: GitHubRepository): MappedProject {
 
   return {
     id: repo.full_name,
+    // `name` MUST be the real GitHub repo name (e.g. "my-cool-project").
+    // This value is used as the key to join with project_settings.repo_name
+    // in the database for custom images, visibility, and display order.
     name: repo.name,
     displayName,
     description: repo.description || 'No description provided.',

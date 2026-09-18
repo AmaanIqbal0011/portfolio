@@ -1,40 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { githubClient } from '@/lib/github/client';
-import { fetchAndCacheRepositories, getCachedData } from '@/lib/github/repositories';
-import { GITHUB_CONFIG } from '@/lib/github/config';
+import { getCachedData, ensureCachePopulated } from '@/lib/github/repositories';
 import { verifyOwnerSession } from '@/lib/auth/owner';
 
-// GET /api/github/repositories - Public endpoint, reads from cache only
+// GET /api/github/repositories - Public endpoint
+// Always ensures the cache is populated before responding, using the server-side
+// GITHUB_TOKEN when no admin session token is available. This guarantees every
+// visitor sees real project data, not empty defaults.
 export async function GET(request: NextRequest) {
-  const cached = getCachedData();
-
-  // Check if owner is connected (has token cookie)
+  // If the visitor is the authenticated admin with a GitHub token cookie,
+  // prefer their token for the request (it may have broader permissions).
   const isOwner = await verifyOwnerSession();
-  const hasToken = !!request.cookies.get('github_token')?.value;
+  const adminToken = request.cookies.get('github_token')?.value;
 
-  // If owner is connected and cache is empty, try to populate
-  if (isOwner && hasToken && (!cached.lastSynced || cached.repositories.length === 0)) {
-    const token = request.cookies.get('github_token')?.value;
-    if (token) {
-      githubClient.setToken(token);
-    }
-    try {
-      const fresh = await fetchAndCacheRepositories(GITHUB_CONFIG.owner);
-      return NextResponse.json({
-        connected: true,
-        data: fresh,
-      });
-    } catch {
-      return NextResponse.json({
-        connected: true,
-        data: cached,
-        error: 'Failed to fetch repositories',
-      });
-    }
+  if (isOwner && adminToken) {
+    githubClient.setToken(adminToken);
   }
 
+  // Ensure cache is populated (uses server-side token if admin token not set).
+  // This is a no-op if the cache is fresh (< 1 hour old).
+  await ensureCachePopulated();
+
+  const cached = getCachedData();
   return NextResponse.json({
-    connected: hasToken,
+    connected: !!(isOwner && adminToken),
     data: cached,
   });
 }

@@ -1,6 +1,7 @@
 import { githubClient } from './client';
 import { mapRepositories } from './mapper';
-import type { GitHubRepository, MappedProject, GitHubCache, GitHubStats } from './types';
+import { GITHUB_CONFIG } from './config';
+import type { GitHubRepository, GitHubCache, GitHubStats } from './types';
 
 // In-memory cache (resets on server restart)
 let cache: GitHubCache = {
@@ -72,4 +73,32 @@ export function isCacheStale(): boolean {
   const now = Date.now();
   const hourMs = 3600 * 1000;
   return now - lastSync > hourMs;
+}
+
+/**
+ * Ensures the in-memory cache is populated with fresh GitHub data.
+ * Uses the server-side GITHUB_TOKEN (or unauthenticated for public repos)
+ * so this works for ALL visitors, not just after an admin OAuth connect.
+ *
+ * Call this from API routes that serve public project data.
+ * The cache acts as a performance optimization — this is the source of truth
+ * for whether data needs refreshing.
+ */
+export async function ensureCachePopulated(): Promise<void> {
+  if (!isCacheStale()) return;
+
+  // Set server-side token for fetching public repos without admin session.
+  // If no GITHUB_TOKEN env var is set, requests go unauthenticated
+  // (subject to GitHub's lower unauthenticated rate limits).
+  if (GITHUB_CONFIG.serverToken) {
+    githubClient.setToken(GITHUB_CONFIG.serverToken);
+  }
+
+  try {
+    await fetchAndCacheRepositories(GITHUB_CONFIG.owner);
+  } catch (error) {
+    // If fetch fails and cache is empty, log but don't throw —
+    // callers should handle empty cache gracefully.
+    console.error('ensureCachePopulated: Failed to refresh GitHub cache:', error);
+  }
 }
