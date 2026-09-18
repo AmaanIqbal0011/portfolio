@@ -120,7 +120,10 @@ export default function GitHubProjects() {
             }))
           );
         } else {
-          setProjects(FALLBACK_PROJECTS);
+          setProjects(FALLBACK_PROJECTS.map(p => ({
+            ...p,
+            customImage: images[p.name] || p.customImage,
+          })));
         }
       })
       .catch(() => {
