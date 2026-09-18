@@ -25,37 +25,37 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --muted: #f7f7f8;
-  --muted-foreground: #6b7280;
+  --background: #f8fafc;
+  --foreground: #0b1220;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --border: #e5e7eb;
-  --primary: #0a0a0a;
-  --primary-foreground: #fafafa;
-  --accent: #f3f4f6;
-  --accent-foreground: #111827;
-  --brand: #6366f1;
-  --brand-light: #818cf8;
-  --surface: #f9fafb;
-}
+  --card-foreground: #0b1220;
+  --border: #e2e8f0;
+  --primary: #0b1220;
+  --primary-foreground: #f8fafc;
+  --accent: #eef2ff;
+  --accent-foreground: #1e293b;
+  --brand: #635bff;
+  --brand-light: #8b85ff;
+  --surface: #f8fafc;
+} 
 
 .dark {
-  --background: #030308;
-  --foreground: #e4e4e7;
-  --muted: #0c0c16;
-  --muted-foreground: #71717a;
-  --card: #08081a;
-  --card-foreground: #e4e4e7;
-  --border: #141428;
-  --primary: #e4e4e7;
-  --primary-foreground: #030308;
-  --accent: #0e0e24;
-  --accent-foreground: #e4e4e7;
-  --brand: #818cf8;
-  --brand-light: #a5b4fc;
-  --surface: #08081a;
+  --background: #070a12;
+  --foreground: #f1f5f9;
+  --muted: #0d1220;
+  --muted-foreground: #94a3b8;
+  --card: #0b1020;
+  --card-foreground: #f1f5f9;
+  --border: #1e293b;
+  --primary: #f1f5f9;
+  --primary-foreground: #070a12;
+  --accent: #111936;
+  --accent-foreground: #f1f5f9;
+  --brand: #8b85ff;
+  --brand-light: #b2aeff;
+  --surface: #0b1020;
 }
 
 html {
@@ -66,6 +66,15 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  background-image: radial-gradient(circle at 50% -10%, color-mix(in srgb, var(--brand) 7%, transparent), transparent 34rem);
+  overflow-x: hidden;
+}
+
+button, a { cursor: pointer; }
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
 }
 
 /* Custom scrollbar */
@@ -171,6 +180,13 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
+}
+
+/* Premium surface helpers */
+.surface-card {
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  box-shadow: 0 18px 55px -35px rgba(15, 23, 42, 0.35);
 }
 
 /* Glass card */

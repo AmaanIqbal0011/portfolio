@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SiGithub } from 'react-icons/si';
 import {
@@ -81,7 +82,13 @@ export default function AdminDashboard({ onDisconnect }: Props) {
       .finally(() => setCertLoading(false));
   };
 
-  useEffect(() => { fetchData(); fetchCerts(); }, []);
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      fetchData();
+      fetchCerts();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   // Project handlers
   const handleSync = async () => {
@@ -228,9 +235,9 @@ export default function AdminDashboard({ onDisconnect }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4" />
-          </a>
+          </Link>
           <h1 className="text-xl font-bold">Dashboard</h1>
         </div>
         <button
@@ -561,7 +568,7 @@ export default function AdminDashboard({ onDisconnect }: Props) {
 
                 {certificates.length === 0 && (
                   <div className="text-center py-10 text-sm text-muted-foreground">
-                    No certificates yet. Click "Add" to create one.
+                    No certificates yet. Click &quot;Add&quot; to create one.
                   </div>
                 )}
               </div>

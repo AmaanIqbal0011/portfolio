@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ExternalLink, Play, ArrowUpRight } from 'lucide-react';
+import Image from 'next/image';
+import { ExternalLink, Play } from 'lucide-react';
 import { SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/si';
 import ScrollReveal from './scroll-reveal';
 
@@ -39,7 +40,7 @@ const WORKFLOW_STEPS = [
 
 export default function FeaturedProject() {
   return (
-    <section id="featured" className="relative py-28 sm:py-36">
+    <section id="featured" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <ScrollReveal>
           <div className="flex items-center gap-3 mb-4">
@@ -70,20 +71,22 @@ export default function FeaturedProject() {
           </div>
         </ScrollReveal>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid items-start gap-8 lg:grid-cols-[1.08fr_0.92fr]">
           {/* Left: Visual / Hero */}
           <ScrollReveal delay={0.1}>
             <motion.div
               whileHover={{ scale: 1.01 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="group relative rounded-2xl border border-border bg-card overflow-hidden"
+              className="group relative overflow-hidden rounded-[24px] border border-border/80 bg-card shadow-[0_24px_60px_-32px_rgba(15,23,42,0.38)]"
             >
               {/* Product screenshot */}
               <div className="aspect-[16/10] relative overflow-hidden">
-                <img
+                <Image
                   src="/contentpilot.png"
                   alt="ContentPilot — AI content repurposing platform"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 55vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8">
@@ -98,7 +101,7 @@ export default function FeaturedProject() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 p-4 border-t border-border">
+              <div className="flex items-center gap-2 border-t border-border/70 bg-card/80 p-4">
                 <a href="https://contentpilot.media/" target="_blank" rel="noopener noreferrer"
                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-opacity">
                   <Play className="w-3 h-3" />
@@ -115,15 +118,15 @@ export default function FeaturedProject() {
 
           {/* Right: Details */}
           <ScrollReveal delay={0.2} className="space-y-6">
-            <p className="text-muted-foreground leading-relaxed text-[15px]">
+            <p className="max-w-xl text-[15px] leading-8 text-muted-foreground">
               An AI-powered content repurposing and distribution platform that helps
               creators, entrepreneurs, and small teams turn one piece of content into
               platform-ready content across multiple social networks.
             </p>
 
             {/* Workflow */}
-            <div>
-              <h4 className="text-sm font-semibold mb-3">How it works</h4>
+            <div className="rounded-2xl border border-border/70 bg-card/45 p-5">
+              <h4 className="mb-3 text-sm font-semibold">How it works</h4>
               <div className="relative">
                 {WORKFLOW_STEPS.map((step, i) => (
                   <div key={step} className="flex items-center gap-3 text-sm relative">

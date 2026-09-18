@@ -6,10 +6,10 @@ import { ArrowRight, Brain, Code, Workflow, Layers } from 'lucide-react';
 import ScrollReveal from './scroll-reveal';
 
 const STRENGTHS = [
-  { icon: Brain, label: 'AI Agents & Agentic AI', color: 'brand' },
-  { icon: Layers, label: 'AI-Powered SaaS', color: 'purple' },
-  { icon: Code, label: 'Full-Stack Development', color: 'emerald' },
-  { icon: Workflow, label: 'Workflow Automation', color: 'brand' },
+  { icon: Brain, label: 'AI Agents & Agentic AI', iconClass: 'text-brand', bgClass: 'bg-brand/10' },
+  { icon: Layers, label: 'AI-Powered SaaS', iconClass: 'text-purple-500', bgClass: 'bg-purple-500/10' },
+  { icon: Code, label: 'Full-Stack Development', iconClass: 'text-emerald-500', bgClass: 'bg-emerald-500/10' },
+  { icon: Workflow, label: 'Workflow Automation', iconClass: 'text-brand', bgClass: 'bg-brand/10' },
 ] as const;
 
 const container = {
@@ -96,14 +96,14 @@ export default function About() {
                 viewport={{ once: true, margin: '-40px' }}
                 className="grid grid-cols-2 gap-3 mb-10"
               >
-                {STRENGTHS.map(({ icon: Icon, label, color }) => (
+                {STRENGTHS.map(({ icon: Icon, label, iconClass, bgClass }) => (
                   <motion.div
                     key={label}
                     variants={item}
                     className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-card/30 hover:border-brand/20 transition-all duration-300"
                   >
-                    <div className={`flex items-center justify-center w-9 h-9 rounded-lg bg-${color}/10 flex-shrink-0`}>
-                      <Icon className={`w-4 h-4 text-${color}`} />
+                    <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${bgClass} flex-shrink-0`}>
+                      <Icon className={`w-4 h-4 ${iconClass}`} />
                     </div>
                     <span className="text-sm font-medium text-foreground/90">{label}</span>
                   </motion.div>

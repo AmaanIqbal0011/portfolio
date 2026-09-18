@@ -18,11 +18,14 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const stored = localStorage.getItem('portfolio-theme') as Theme | null;
-    const initial = stored || 'light';
-    setTheme(initial);
-    document.documentElement.classList.toggle('dark', initial === 'dark');
+    const initial = stored === 'dark' ? 'dark' : 'light';
+    const frame = window.requestAnimationFrame(() => {
+      setMounted(true);
+      setTheme(initial);
+      document.documentElement.classList.toggle('dark', initial === 'dark');
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const toggleTheme = () => {

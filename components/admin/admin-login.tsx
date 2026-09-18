@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Lock, Loader2, Eye, EyeOff } from 'lucide-react';
 
@@ -91,12 +92,12 @@ export default function AdminLogin({ onLogin }: Props) {
         </form>
 
         <div className="mt-6 text-center">
-          <a
+          <Link
             href="/"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Back to portfolio
-          </a>
+          </Link>
         </div>
       </motion.div>
     </div>

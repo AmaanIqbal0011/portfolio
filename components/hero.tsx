@@ -1,315 +1,137 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ArrowDown, ArrowRight } from 'lucide-react';
-import { SiGithub } from 'react-icons/si';
-import { FaLinkedinIn } from 'react-icons/fa';
+import { ArrowDown, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 
 function ParticlesBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationId: number;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    let animationId = 0;
     let particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    };
-
-    const init = () => {
-      particles = [];
-      const count = Math.min(40, Math.floor((canvas.offsetWidth * canvas.offsetHeight) / 25000));
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * canvas.offsetWidth,
-          y: Math.random() * canvas.offsetHeight,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          size: Math.random() * 1.5 + 0.5,
-          opacity: Math.random() * 0.4 + 0.1,
-        });
-      }
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      particles = Array.from({ length: Math.min(42, Math.floor((canvas.offsetWidth * canvas.offsetHeight) / 26000)) }, () => ({
+        x: Math.random() * canvas.offsetWidth,
+        y: Math.random() * canvas.offsetHeight,
+        vx: (Math.random() - 0.5) * 0.24,
+        vy: (Math.random() - 0.5) * 0.24,
+        size: Math.random() * 1.4 + 0.4,
+        opacity: Math.random() * 0.28 + 0.08,
+      }));
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0) p.x = canvas.offsetWidth;
-        if (p.x > canvas.offsetWidth) p.x = 0;
-        if (p.y < 0) p.y = canvas.offsetHeight;
-        if (p.y > canvas.offsetHeight) p.y = 0;
-
+      particles.forEach(particle => {
+        particle.x = (particle.x + particle.vx + canvas.offsetWidth) % canvas.offsetWidth;
+        particle.y = (particle.y + particle.vy + canvas.offsetHeight) % canvas.offsetHeight;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(129, 140, 248, ${p.opacity})`;
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(139, 133, 255, ${particle.opacity})`;
         ctx.fill();
-      }
-
-      // Draw connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(129, 140, 248, ${0.06 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-
+      });
       animationId = requestAnimationFrame(draw);
     };
 
     resize();
-    init();
     draw();
-
-    window.addEventListener('resize', () => {
-      resize();
-      init();
-    });
-
+    window.addEventListener('resize', resize);
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resize);
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      aria-hidden="true"
-    />
-  );
+  return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />;
 }
 
 function SpotlightEffect() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
   const springX = useSpring(mouseX, { damping: 25, stiffness: 150 });
   const springY = useSpring(mouseY, { damping: 25, stiffness: 150 });
 
   useEffect(() => {
-    const handleMouse = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+    const handleMouse = (event: MouseEvent) => {
+      mouseX.set(event.clientX);
+      mouseY.set(event.clientY);
     };
     window.addEventListener('mousemove', handleMouse, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouse);
   }, [mouseX, mouseY]);
 
-  return (
-    <motion.div
-      className="pointer-events-none fixed inset-0 z-0"
-      style={{
-        background: useTransform(
-          [springX, springY],
-          ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, rgba(129,140,248,0.04), transparent 40%)`
-        ),
-      }}
-    />
-  );
+  return <motion.div className="pointer-events-none fixed inset-0 z-0" style={{ background: useTransform([springX, springY], ([x, y]) => `radial-gradient(520px circle at ${x}px ${y}px, rgba(99,91,255,0.06), transparent 42%)`) }} />;
 }
+
+const fadeUp = (delay: number) => ({ initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as const } });
 
 export default function Hero() {
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative flex min-h-[720px] items-center overflow-hidden pt-24 lg:min-h-screen">
       <SpotlightEffect />
-
-      {/* Grid background */}
-      <div className="absolute inset-0 grid-bg grid-fade opacity-30" />
-
-      {/* Aurora glow orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[15%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px]">
-          <div className="absolute inset-0 bg-gradient-to-r from-brand/6 via-purple-500/4 to-blue-500/6 rounded-full blur-[140px] animate-pulse-glow" />
-        </div>
-        <div className="absolute top-[40%] left-[20%] w-80 h-80 bg-brand/4 rounded-full blur-[120px] animate-float" />
-        <div className="absolute bottom-[20%] right-[15%] w-64 h-64 bg-purple-500/4 rounded-full blur-[100px] animate-float" style={{ animationDelay: '2s' }} />
-      </div>
-
-      {/* Spotlight from top */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] pointer-events-none">
-        <div className="w-full h-full bg-gradient-to-b from-brand/5 to-transparent rounded-full blur-[120px]" />
-      </div>
-
-      {/* Particles */}
+      <div className="absolute inset-0 grid-bg grid-fade opacity-25" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[780px] -translate-x-1/2 rounded-full bg-brand/8 blur-[140px]" />
       <ParticlesBackground />
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 pt-28 pb-20 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Text content */}
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-20 pt-16 sm:px-8 lg:pb-24 lg:pt-24">
+        <div className="grid items-center gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20">
           <div className="text-center lg:text-left">
-            {/* Status badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-border bg-card/60 backdrop-blur-md mb-8 shadow-[0_0_20px_-8px_rgba(129,140,248,0.15)]"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-              </span>
-              <span className="text-xs font-medium text-muted-foreground tracking-wide">Available for AI Projects &amp; Collaborations</span>
+            <motion.div {...fadeUp(0.15)} className="mb-7 inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">
+              <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" /></span>
+              Available for select projects
             </motion.div>
 
-            {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] mb-3"
-            >
-              Amaan Iqbal
+            <motion.p {...fadeUp(0.25)} className="mb-4 text-sm font-medium text-muted-foreground">Hello, I&apos;m Amaan Iqbal — also known as Manho.</motion.p>
+            <motion.h1 {...fadeUp(0.32)} className="text-5xl font-bold leading-[1.02] tracking-[-0.055em] sm:text-6xl lg:text-[76px]">
+              Building the <span className="gradient-text">intelligence</span> behind ambitious products.
             </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.52, duration: 0.7 }}
-              className="text-lg sm:text-xl text-muted-foreground mb-5"
-            >
-              known as <span className="font-semibold text-foreground">Manho</span>
+            <motion.p {...fadeUp(0.42)} className="mx-auto mt-7 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg lg:mx-0">
+              I design and ship production-ready AI agents, automation systems, and SaaS products that turn complex workflows into simple, scalable experiences.
             </motion.p>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.58, duration: 0.7 }}
-              className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-7"
-            >
-              <span className="gradient-text">AI Agent Developer</span> &amp; Software Engineer
-            </motion.p>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65, duration: 0.7 }}
-              className="max-w-xl mx-auto lg:mx-0 text-base sm:text-lg text-muted-foreground leading-relaxed mb-12"
-            >
-              I design and build production-ready AI agents, intelligent automation
-              systems, and SaaS products — turning complex ideas into scalable,
-              real-world software.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.75, duration: 0.7 }}
-              className="flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-3 mb-12"
-            >
-              <a
-                href="#projects"
-                className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-all shadow-lg shadow-foreground/5"
-              >
-                View My Work
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-              </a>
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-border text-sm font-semibold hover:bg-accent hover:border-brand/20 transition-all"
-              >
-                Let&apos;s Connect
-              </a>
+            <motion.div {...fadeUp(0.52)} className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+              <a href="#projects" className="group inline-flex items-center justify-center gap-2.5 rounded-xl bg-foreground px-6 py-3.5 text-sm font-semibold text-background shadow-[0_14px_30px_-16px_rgba(15,23,42,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_35px_-16px_rgba(99,91,255,0.5)]">Explore my work <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></a>
+              <a href="#contact" className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card/40 px-6 py-3.5 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:bg-accent">Start a conversation</a>
             </motion.div>
 
-            {/* Social icons */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.95, duration: 0.7 }}
-              className="flex items-center lg:justify-start justify-center gap-3"
-            >
-              <a
-                href="https://github.com/AmaanIqbal0011"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub profile"
-                className="flex items-center justify-center w-11 h-11 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-brand/20 hover:bg-brand/5 transition-all duration-300"
-              >
-                <SiGithub className="w-[18px] h-[18px]" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/amaniqbal0011/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn profile"
-                className="flex items-center justify-center w-11 h-11 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-brand/20 hover:bg-brand/5 transition-all duration-300"
-              >
-                <FaLinkedinIn className="w-[18px] h-[18px]" />
-              </a>
+            <motion.div {...fadeUp(0.64)} className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-muted-foreground lg:justify-start">
+              {['AI agents', 'Automation systems', 'Full-stack SaaS'].map(item => <span key={item} className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-brand" />{item}</span>)}
             </motion.div>
           </div>
 
-          {/* Right: Profile photo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative flex justify-center lg:justify-end"
-          >
-            {/* Subtle glow behind photo */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[85%] h-[85%] bg-gradient-to-br from-brand/8 via-purple-500/5 to-transparent rounded-full blur-[60px]" />
-            </div>
-
-            {/* Photo container */}
-            <div className="relative">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[340px] lg:h-[340px] rounded-2xl overflow-hidden border border-border/60 shadow-[0_0_40px_-12px_rgba(129,140,248,0.12)]">
-                <Image
-                  src="/me1.png"
-                  alt="Amaan Iqbal — AI Agent Developer"
-                  fill
-                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 340px"
-                  className="object-cover object-center"
-                  priority
-                />
-                {/* Subtle gradient overlay at bottom for depth */}
-                <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background/20 to-transparent pointer-events-none" />
+          <motion.div {...fadeUp(0.38)} className="relative mx-auto w-full max-w-[430px] lg:mx-0 lg:ml-auto">
+            <div className="absolute -inset-10 rounded-full bg-brand/12 blur-[80px]" />
+            <div className="relative rounded-[28px] border border-white/30 bg-white/10 p-2 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <div className="relative aspect-[0.9] overflow-hidden rounded-[22px] bg-muted">
+                <Image src="/me1.png" alt="Amaan Iqbal — AI Agent Developer" fill sizes="(max-width: 1024px) 430px, 38vw" className="object-cover object-center" priority />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                <div className="absolute inset-x-5 bottom-5 flex items-end justify-between text-white">
+                  <div><p className="text-sm font-semibold">AI Agent Developer</p><p className="mt-1 text-xs text-white/65">Building what&apos;s next</p></div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10 backdrop-blur-md"><Sparkles className="h-4 w-4 text-brand-light" /></div>
+                </div>
               </div>
             </div>
+            <div className="absolute -left-5 top-12 hidden items-center gap-2 rounded-2xl border border-border/70 bg-card/85 px-3.5 py-3 shadow-xl backdrop-blur-xl sm:flex"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500"><CheckCircle2 className="h-4 w-4" /></span><div><p className="text-xs font-semibold">Production ready</p><p className="text-[10px] text-muted-foreground">From idea to launch</p></div></div>
+            <div className="absolute -right-5 bottom-12 hidden items-center gap-2 rounded-2xl border border-border/70 bg-card/85 px-3.5 py-3 shadow-xl backdrop-blur-xl sm:flex"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand/10 text-brand"><Sparkles className="h-4 w-4" /></span><div><p className="text-xs font-semibold">AI-native thinking</p><p className="text-[10px] text-muted-foreground">Agents · systems · SaaS</p></div></div>
           </motion.div>
         </div>
+
+        <motion.div {...fadeUp(0.78)} className="mt-20 grid grid-cols-2 gap-3 border-t border-border/70 pt-6 sm:grid-cols-4">
+          {[['05+', 'Core disciplines'], ['10+', 'Products & systems'], ['24/7', 'Curious mindset'], ['100%', 'Built with intent']].map(([value, label]) => <div key={label} className="px-2 sm:px-4"><p className="text-xl font-bold tracking-tight sm:text-2xl">{value}</p><p className="mt-1 text-[11px] text-muted-foreground sm:text-xs">{label}</p></div>)}
+        </motion.div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.4, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <ArrowDown className="w-4 h-4 text-muted-foreground/50" />
-        </motion.div>
-      </motion.div>
+      <motion.a href="#about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3 }} className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/60 md:flex">Scroll to explore <ArrowDown className="h-3.5 w-3.5 animate-bounce" /></motion.a>
     </section>
   );
 }
